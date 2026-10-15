@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgery Image Detection</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --purple: #9b83ff;
+      --ink: #f3f0ff;
+      --muted: #a6afcc;
+      --line: #394363;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 10% 10%, #29366f 0, transparent 38%),
+        radial-gradient(ellipse at 90% 90%, #263b5c 0, transparent 35%),
+        #11152b;
+      min-height: 100vh;
+    }
+
+    button, input { font: inherit; }
+
+    .navbar {
+      max-width: 1160px;
+      margin: auto;
+      padding: 23px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -.7px;
+    }
+
+    .brand-icon {
+      width: 43px;
+      height: 43px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: linear-gradient(135deg, #a28bff, #6946dc);
+      box-shadow: 0 8px 20px #7657e83a;
+      font-size: 24px;
+    }
+
+    .nav-tag {
+      color: #c9bdff;
+      background: #272746;
+      border: 1px solid #49436f;
+      padding: 9px 14px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    main {
+      max-width: 1000px;
+      padding: 32px 22px 55px;
+      margin: auto;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 15px;
+      border: 1px solid #45416d;
+      background: #202441;
+      color: #c6b9ff;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #a28bff;
+      box-shadow: 0 0 10px #a28bff;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(35px, 6vw, 56px);
+      line-height: 1.13;
+      letter-spacing: -1.8px;
+      margin: 20px 0 14px;
+    }
+
+    h1 span {
+      color: transparent;
+      background: linear-gradient(110deg, #b6a4ff, #7f9cff);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 570px;
+      margin: auto;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: #222944;
+      color: #f4f0ff;
+      border: 1px solid #394363;
+      border-radius: 24px;
+      padding: 25px;
+      box-shadow: 0 15px 45px #00000025;
+    }
+
+    .card-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 7px;
+    }
+
+    .heading-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: 14px;
+      color: #c2b4ff;
+      background: #34335d;
+      font-size: 22px;
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      margin: 0;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      margin: 5px 0 20px;
+    }
+
+    .dropzone {
+      min-height: 245px;
+      border: 1.5px dashed #6677b8;
+      background: linear-gradient(145deg, #293454, #252d49);
+      color: #f4f0ff;
+      border-radius: 19px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 22px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s ease;
+      overflow: hidden;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: #a28bff;
+      background: linear-gradient(145deg, #343a65, #293554);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      background: #41466f;
+      color: #d1c6ff;
+      border-radius: 21px;
+      font-size: 30px;
+      box-shadow: 0 8px 25px #00000020;
+      margin-bottom: 15px;
+    }
+
+    .drop-title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .drop-hint {
+      color: #b3bad3;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 215px;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    #fileName {
+      color: #c5b8ff;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .browse {
+      color: #c5b8ff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    #imageInput { display: none; }
+
+    .format-note {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: #a6afcc;
+      font-size: 11px;
+      margin: 13px 1px 20px;
+    }
+
+    .primary-btn {
+      border: 0;
+      width: 100%;
+      padding: 15px 18px;
+      border-radius: 14px;
+      color: white;
+      background: linear-gradient(110deg, #9475fa, #6747d5);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px #7657e832;
+      transition: .2s;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px #7657e845;
+    }
+
+    .primary-btn:disabled {
+      opacity: .65;
+      cursor: wait;
+      transform: none;
+    }
+
+    .result-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-empty {
+      flex: 1;
+      min-height: 245px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 19px;
+      background: #1b223b;
+      border: 1px solid #333d5b;
+      padding: 24px;
+    }
+
+    .result-art {
+      width: 90px;
+      height: 90px;
+      display: grid;
+      place-items: center;
+      border-radius: 28px;
+      font-size: 40px;
+      color: #d1c5ff;
+      background: linear-gradient(145deg, #3c376b, #2b4567);
+      margin-bottom: 20px;
+    }
+
+    .result-empty h3 {
+      font-family: 'Outfit', sans-serif;
+      margin: 0 0 9px;
+      font-size: 19px;
+      color: #f4f0ff;
+    }
+
+    .result-empty p {
+      color: #a6afcc;
+      font-size: 12px;
+      line-height: 1.8;
+      max-width: 250px;
+      margin: 0;
+    }
+
+    .result-content { display: none; }
+
+    .status {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      margin-bottom: 15px;
+    }
+
+    .status.real {
+      background: #173f3a;
+      color: #80e8bd;
+    }
+
+    .status.forged {
+      background: #4a302e;
+      color: #ffb29d;
+    }
+
+    .result-content h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      letter-spacing: -.7px;
+      margin: 0 0 9px;
+      color: #f4f0ff;
+    }
+
+    .result-description {
+      font-size: 13px;
+      color: #a6afcc;
+      line-height: 1.7;
+      margin: 0 0 25px;
+    }
+
+    .meter-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 11px;
+    }
+
+    .meter-heading span:last-child {
+      color: #c2b4ff;
+    }
+
+    .meter {
+      height: 9px;
+      background: #39405b;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #b09bff, #7f9cff);
+      border-radius: 20px;
+      transition: width .7s ease;
+    }
+
+    .error {
+      display: none;
+      margin-top: 14px;
+      color: #ffb8c0;
+      background: #432b3b;
+      border: 1px solid #714050;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 16px;
+      border: 1px solid #343e5c;
+      background: #202741;
+      border-radius: 17px;
+    }
+
+    .step-number {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: #38345f;
+      color: #d0c4ff;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .step strong {
+      display: block;
+      font-size: 12px;
+      color: #f4f0ff;
+    }
+
+    .step small {
+      display: block;
+      color: #a6afcc;
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    footer {
+      text-align: center;
+      color: #929dbb;
+      font-size: 11px;
+      padding: 28px 15px 8px;
+    }
+
+    @media (max-width: 720px) {
+      main { padding: 22px 15px 40px; }
+      .workspace { grid-template-columns: 1fr; }
+      .card { padding: 19px; }
+      .steps { grid-template-columns: 1fr; }
+      .navbar { padding: 16px; }
+      h1 { letter-spacing: -1px; }
+      .nav-tag { font-size: 9px; padding: 8px 10px; }
+      .brand { font-size: 18px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">◈</div>
+      <span>Forgery Image Detection</span>
+    </div>
+    <div class="nav-tag">DEEP LEARNING PROJECT</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        FORGERY IMAGE DETECTION
+      </div>
+
+      <h1>Forgery Image <span>Detection</span></h1>
+
+      <p>
+        Analyze digital images using a deep learning model to identify
+        possible signs of image forgery.
+      </p>
+    </section>
+
+    <section class="workspace">
+      <div class="card">
+        <div class="card-heading">
+          <div class="heading-icon">↥</div>
+          <h2>Upload your image</h2>
+        </div>
+
+        <p class="subtext">
+          Choose an image from your device to begin the analysis.
+        </p>
+
+        <form id="uploadForm">
+          <label class="dropzone" id="dropzone" for="imageInput">
+            <div class="upload-icon" id="uploadIcon">↑</div>
+            <img id="preview" alt="Selected image preview">
+
+            <div class="drop-title" id="dropTitle">
+              Drop your image here
+            </div>
+
+            <div class="drop-hint" id="dropHint">
+              or <span class="browse">browse files</span> to upload
+            </div>
+
+            <div id="fileName"></div>
+          </label>
+
+          <input type="file" id="imageInput" accept="image/*" required>
+
+          <div class="format-note">
+            <span>JPG · PNG · JPEG</span>
+            <span>Maximum size: 10 MB</span>
+          </div>
+
+          <button class="primary-btn" id="analyzeBtn" type="submit">
+            ✦ &nbsp; Analyze Image
+          </button>
+
+          <div class="error" id="errorMessage" role="alert"></div>
+        </form>
+      </div>
+
+      <div class="card result-panel">
+        <div class="card-heading">
+          <div class="heading-icon">✧</div>
+          <h2>Analysis results</h2>
+        </div>
+
+        <p class="subtext">
+          Your model prediction will appear here.
+        </p>
+
+        <div class="result-empty" id="emptyState">
+          <div class="result-art">⌁</div>
+          <h3>Ready to analyze</h3>
+          <p>
+            Upload an image and click Analyze Image to see the prediction.
+          </p>
+        </div>
+
+        <div class="result-content" id="resultContent" aria-live="polite">
+          <div class="status" id="statusLabel">MODEL RESULT</div>
+
+          <h3 id="predictionTitle">—</h3>
+          <p class="result-description" id="predictionDescription"></p>
+
+          <div class="meter-heading">
+            <span>Forged probability</span>
+            <span id="probabilityText">—</span>
+          </div>
+
+          <div
+            class="meter"
+            role="progressbar"
+            aria-label="Forged probability"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            id="probabilityMeter"
+          >
+            <div class="meter-fill" id="meterFill"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps">
+      <div class="step">
+        <div class="step-number">01</div>
+        <div>
+          <strong>Upload</strong>
+          <small>Select an image</small>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">02</div>
+        <div>
+          <strong>Analyze</strong>
+          <small>Run the trained model</small>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">03</div>
+        <div>
+          <strong>Review</strong>
+          <small>View prediction results</small>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Forgery Image Detection Using Deep Learning
+    </footer>
+  </main>
+
+  <script>
+    const input = document.getElementById("imageInput");
+    const dropzone = document.getElementById("dropzone");
+    const preview = document.getElementById("preview");
+    const fileName = document.getElementById("fileName");
+    const form = document.getElementById("uploadForm");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const errorMessage = document.getElementById("errorMessage");
+
+    const emptyState = document.getElementById("emptyState");
+    const resultContent = document.getElementById("resultContent");
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = "block";
+    }
+
+    function hideError() {
+      errorMessage.textContent = "";
+      errorMessage.style.display = "none";
+    }
+
+    function selectImage(file) {
+      hideError();
+
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        showError("Please choose a valid image file.");
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        showError("The image must be smaller than 10 MB.");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        preview.src = reader.result;
+        preview.style.display = "block";
+
+        document.getElementById("uploadIcon").style.display = "none";
+        document.getElementById("dropTitle").textContent = "Image selected";
+        document.getElementById("dropHint").textContent =
+          "Click here to choose another image";
+
+        fileName.textContent = file.name;
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    input.addEventListener("change", () => {
+      selectImage(input.files[0]);
+    });
+
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropzone.addEventListener(eventName, event => {
+        event.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropzone.addEventListener(eventName, event => {
+        event.preventDefault();
+        dropzone.classList.remove("dragover");
+      });
+    });
+
+    dropzone.addEventListener("drop", event => {
+      const file = event.dataTransfer.files[0];
+      if (!file) return;
+
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      input.files = transfer.files;
+
+      selectImage(file);
+    });
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      hideError();
+
+      const file = input.files[0];
+
+      if (!file) {
+        showError("Please select an image before analyzing.");
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        showError("Please select a valid image.");
+        return;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        showError("The image must be smaller than 10 MB.");
+        return;
+      }
+
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = "Analyzing image...";
+
+      emptyState.style.display = "flex";
+      emptyState.querySelector("h3").textContent = "Analyzing...";
+      emptyState.querySelector("p").textContent =
+        "Your image is being processed by the model.";
+
+      resultContent.style.display = "none";
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/predict", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.error) {
+          throw new Error(
+            result.error || "Unable to analyze this image."
+          );
+        }
+
+        const probability = Number(result.forged_probability);
+
+        if (
+          !Number.isFinite(probability) ||
+          !["REAL", "FORGED"].includes(result.prediction)
+        ) {
+          throw new Error("The server returned an unexpected result.");
+        }
+
+        const safeProbability = Math.max(0, Math.min(100, probability));
+        const isForged = result.prediction === "FORGED";
+
+        const status = document.getElementById("statusLabel");
+
+        status.textContent = isForged
+          ? "⚠ FORGERY SUSPECTED"
+          : "✓ LIKELY ORIGINAL";
+
+        status.className = "status " + (isForged ? "forged" : "real");
+
+        document.getElementById("predictionTitle").textContent =
+          isForged ? "Possible forgery" : "Likely real";
+
+        document.getElementById("predictionDescription").textContent =
+          isForged
+            ? "The model classified this image as potentially forged."
+            : "The model classified this image as likely real.";
+
+        document.getElementById("probabilityText").textContent =
+          safeProbability.toFixed(2) + "%";
+
+        document.getElementById("meterFill").style.width =
+          safeProbability + "%";
+
+        document.getElementById("probabilityMeter").setAttribute(
+          "aria-valuenow",
+          String(safeProbability)
+        );
+
+        emptyState.style.display = "none";
+        resultContent.style.display = "block";
+
+      } catch (error) {
+        emptyState.style.display = "flex";
+        emptyState.querySelector("h3").textContent = "Analysis failed";
+        emptyState.querySelector("p").textContent =
+          "Please try again with another image.";
+
+        showError(
+          error.message || "Something went wrong. Please try again."
+        );
+
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerHTML = "✦ &nbsp; Analyze Image";
+      }
+    });
+  </script>
+</body>
+</html>
